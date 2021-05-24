@@ -30,7 +30,7 @@ class GameOverScene: SKScene {
         super.touchesEnded(touches, with: event)
         
         let scene = GameScene(size: size)
-        let transition = SKTransition.flipVertical(withDuration: transitionDuration ?? 0.5)
+        let transition = SKTransition.doorsCloseHorizontal(withDuration: transitionDuration ?? 0.5)
 
         view?.presentScene(scene, transition: transition)
     }

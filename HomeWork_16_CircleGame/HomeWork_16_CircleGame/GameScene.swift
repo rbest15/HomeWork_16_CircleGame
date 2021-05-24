@@ -41,6 +41,12 @@ class GameScene: SKScene {
         moveNode(player, to: touches.first!.location(in: self), speed: playerSpeed)
     }
     
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        
+        moveNode(player, to: touches.first!.location(in: self), speed: playerSpeed)
+    }
+    
     func initialSetUp() {
         physicsWorld.contactDelegate = self
         physicsWorld.gravity = .zero
@@ -48,8 +54,8 @@ class GameScene: SKScene {
         player = SKShapeNode(circleOfRadius: playerRadius)
         enemy = SKShapeNode(circleOfRadius: enemyRadius)
         
-        player.fillColor = .cyan
-        enemy.fillColor = .red
+        player.fillColor = #colorLiteral(red: 0.05683284253, green: 0.7200763822, blue: 0.9884522557, alpha: 1)
+        enemy.fillColor = #colorLiteral(red: 1, green: 0.02140153199, blue: 0.004378358368, alpha: 1)
         
         player.position = CGPoint(x: size.width / 2, y: size.height / 2)
         enemy.position = CGPoint(x: size.width / 2, y: enemyRadius + enemyYPosOffset)
@@ -103,7 +109,7 @@ class GameScene: SKScene {
 extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         let scene = GameOverScene(size: size)
-        let transition = SKTransition.flipVertical(withDuration: transitionDuration)
+        let transition = SKTransition.doorsCloseVertical(withDuration: transitionDuration)
         scene.score = score
         scene.transitionDuration = transitionDuration
         view!.presentScene(scene, transition: transition)

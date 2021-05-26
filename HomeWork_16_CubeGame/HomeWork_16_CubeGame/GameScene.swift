@@ -4,14 +4,32 @@ import GameplayKit
 class GameScene: SKScene {
     
     var heroInAir = false
+    var gameIsPaused = false {
+        didSet {
+            if gameIsPaused == true {
+                children.forEach { node in
+                    node.removeAllActions()
+                    node.children.forEach { node in
+                        node.removeAllActions()
+                    }
+                }
+                enemyNodeArray.forEach { node in
+                    node.physicsBody?.affectedByGravity = false
+                }
+                musicNode.run(SKAction.stop())
+                timer.invalidate()
+            }
+        }
+    }
     
-    let backgroundNodeTexture = SKTexture(imageNamed: "Background")
-    var backgroundSpriteNode = SKSpriteNode()
-    let backgroundNode = SKNode()
-    
+    var timer = Timer()
+
     let heroNodeTexture = SKTexture(imageNamed: "Warrior_Run_1")
     var heroSpriteNode = SKSpriteNode()
     let heroNode = SKNode()
+    
+    var backGroundNodeArray = [SKNode]()
+    var enemyNodeArray = [SKNode]()
     
     var groundSpriteNode = SKSpriteNode()
     let groundNode = SKNode()
@@ -21,8 +39,7 @@ class GameScene: SKScene {
     
     var secondWallSpriteNode = SKSpriteNode()
     let secondWallNode = SKNode()
-    
-    
+        
     let heroRunTextureArray : [SKTexture] = [SKTexture(imageNamed: "Warrior_Run_1"),
                                              SKTexture(imageNamed: "Warrior_Run_2"),
                                              SKTexture(imageNamed: "Warrior_Run_3"),
@@ -40,27 +57,52 @@ class GameScene: SKScene {
                                              SKTexture(imageNamed: "Warrior_UptoFall_2"),
                                              SKTexture(imageNamed: "Warrior_Fall_1"),
     ]
+
+    let bgLayerTextures : [(SKTexture, CGFloat)]  = [(SKTexture(imageNamed: "Layer_0000_9"), 3),
+                                                     (SKTexture(imageNamed: "Layer_0001_8"), 3),
+                                                     (SKTexture(imageNamed: "Layer_0002_7"), 3),
+                                                     (SKTexture(imageNamed: "Layer_0003_6"), 3),
+                                                     (SKTexture(imageNamed: "Layer_0004_Lights"), 3),
+                                                     (SKTexture(imageNamed: "Layer_0005_5"), 4),
+                                                     (SKTexture(imageNamed: "Layer_0006_4"), 4),
+                                                     (SKTexture(imageNamed: "Layer_0007_Lights"), 4),
+                                                     (SKTexture(imageNamed: "Layer_0008_3"), 5),
+                                                     (SKTexture(imageNamed: "Layer_0009_2"), 5),
+                                                     (SKTexture(imageNamed: "Layer_0010_1"), 5)
+    ]
+    
+    let enenyTexture: [SKTexture] = [SKTexture(imageNamed: "fly01"),
+                                     SKTexture(imageNamed: "fly02"),
+                                     SKTexture(imageNamed: "fly03"),
+                                     SKTexture(imageNamed: "fly04"),
+                                     SKTexture(imageNamed: "fly05"),
+                                     SKTexture(imageNamed: "fly06"),
+                                     SKTexture(imageNamed: "fly07")
+    ]
     
     var musicNode = SKAudioNode()
     
     var heroMask : UInt32 = 1
     var groundMask : UInt32 = 2
     var wallMask : UInt32 = 3
+    var enemyMask : UInt32 = 4
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
-        physicsWorld.contactDelegate = self
-        physicsWorld.gravity = CGVector(dx: -3, dy: -10)
+        
         initialSetUp()
     }
     
     func initialSetUp() {
-        createBackground(node: backgroundNode, texture: backgroundNodeTexture, speed: 3)
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx: -3, dy: -10)
+        
+        addBackground()
         createHero()
         createGround()
         createWall()
         createAudio()
-        addChild(backgroundNode)
+        startSpawn()
         addChild(heroNode)
         addChild(groundNode)
         addChild(wallNode)
@@ -68,7 +110,8 @@ class GameScene: SKScene {
         addChild(musicNode)
     }
     
-    func createBackground(node: SKNode, texture: SKTexture, speed: TimeInterval) {
+    func addBackgroundLayer(texture: SKTexture, speed: TimeInterval, zPosOffset: CGFloat) {
+        let node = SKNode()
         let moveBackground = SKAction.moveBy(x: -texture.size().width, y: 0, duration: speed)
         let replaceBackground = SKAction.moveBy(x: texture.size().width, y: 0, duration: 0)
         let moveBackgroundInf = SKAction.repeatForever(SKAction.sequence([moveBackground, replaceBackground]))
@@ -77,9 +120,19 @@ class GameScene: SKScene {
             let sprite = SKSpriteNode(texture: texture)
             sprite.position = CGPoint(x: size.width / 4 + texture.size().width * CGFloat(i), y: size.height / 2)
             sprite.size.height = self.frame.height
-            sprite.zPosition = -1
+            sprite.zPosition = -zPosOffset
             sprite.run(moveBackgroundInf)
             node.addChild(sprite)
+        }
+        backGroundNodeArray.append(node)
+        addChild(node)
+    }
+    
+    fileprivate func addBackground() {
+        var index = 0
+        for text in bgLayerTextures {
+            addBackgroundLayer(texture: text.0, speed: TimeInterval(text.1), zPosOffset: CGFloat(index))
+            index += 1
         }
     }
     
@@ -100,7 +153,7 @@ class GameScene: SKScene {
         wallSpriteNode.physicsBody?.categoryBitMask = wallMask
         wallSpriteNode.zPosition = 1
         
-        secondWallSpriteNode.position = CGPoint(x: size.width, y: 0)
+        secondWallSpriteNode.position = CGPoint(x: size.width + 60, y: 0)
         secondWallSpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 60, height: size.height * 2))
         secondWallSpriteNode.physicsBody?.isDynamic = false
         secondWallSpriteNode.physicsBody?.categoryBitMask = wallMask
@@ -125,6 +178,7 @@ class GameScene: SKScene {
         heroSpriteNode.physicsBody?.contactTestBitMask = groundMask
         heroSpriteNode.physicsBody?.collisionBitMask = groundMask
         
+        
         heroSpriteNode.physicsBody?.isDynamic = true
         heroSpriteNode.physicsBody?.allowsRotation = false
         
@@ -144,6 +198,38 @@ class GameScene: SKScene {
         musicNode.run(SKAction.play())
     }
     
+    func createEnemy(height: CGFloat) {
+        let enemyNode = SKNode()
+        let enemySpriteNode = SKSpriteNode(texture: enenyTexture[0])
+        let enemyAnimation = SKAction.animate(with: enenyTexture, timePerFrame: 0.1)
+        let enemyAnimationRepeat = SKAction.repeatForever(enemyAnimation)
+        enemySpriteNode.run(enemyAnimationRepeat)
+        
+        enemySpriteNode.position = CGPoint(x: size.width, y: height)
+        enemySpriteNode.zPosition = 1
+        
+        enemySpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: enenyTexture[0].size().width, height: enenyTexture[0].size().height))
+        enemySpriteNode.physicsBody?.categoryBitMask = enemyMask
+        enemySpriteNode.physicsBody?.contactTestBitMask = heroMask
+        enemySpriteNode.physicsBody?.collisionBitMask = groundMask
+        
+        enemySpriteNode.physicsBody?.isDynamic = true
+        enemySpriteNode.physicsBody?.affectedByGravity = false
+        
+        let move = SKAction.applyImpulse(CGVector(dx: -100, dy: 0), duration: 10)
+        enemySpriteNode.run(move)
+        
+        enemyNodeArray.append(enemyNode)
+        enemyNode.addChild(enemySpriteNode)
+        addChild(enemyNode)
+    }
+    
+    func startSpawn() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+            self.createEnemy(height: CGFloat.random(in: 0...self.size.height - 50))
+        }
+    }
+    
 }
 
 
@@ -153,6 +239,23 @@ extension GameScene: SKPhysicsContactDelegate {
         
         if contact.bodyA.categoryBitMask == 1 && contact.bodyB.categoryBitMask == 2 {
             heroInAir = false
+            if gameIsPaused {
+                physicsWorld.gravity = CGVector(dx: 0, dy: -10)
+            }
+        }
+        
+        if contact.bodyA.categoryBitMask == 4 && contact.bodyB.categoryBitMask == 1 || contact.bodyA.categoryBitMask == 1 && contact.bodyB.categoryBitMask == 4 {
+            gameIsPaused = true
+            physicsWorld.gravity = CGVector(dx: 0, dy: -10)
+        }
+        
+        if contact.bodyA.categoryBitMask == 4 && contact.bodyB.categoryBitMask == 3 || contact.bodyA.categoryBitMask == 3 && contact.bodyB.categoryBitMask == 4 {
+            if contact.bodyA.categoryBitMask == 4 {
+                contact.bodyA.node?.removeFromParent()
+            } else {
+                contact.bodyB.node?.removeFromParent()
+            }
+            
         }
     }
 }
@@ -162,7 +265,9 @@ extension GameScene {
         super.touchesBegan(touches, with: event)
         
         if !heroInAir {
-            heroJump()
+            if !gameIsPaused {
+                heroJump()
+            }
         }
     }
     

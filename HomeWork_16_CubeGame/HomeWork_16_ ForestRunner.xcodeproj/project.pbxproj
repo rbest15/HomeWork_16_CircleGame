@@ -14,10 +14,12 @@
 		6F421121265D13080027EF95 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6F421120265D13080027EF95 /* Assets.xcassets */; };
 		6F42114A265D1BB60027EF95 /* hero.atlas in Resources */ = {isa = PBXBuildFile; fileRef = 6F421149265D1BB50027EF95 /* hero.atlas */; };
 		6F4284CB265D71A7003BB106 /* makai-symphony-dragon-slayer.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6F4284CA265D71A7003BB106 /* makai-symphony-dragon-slayer.mp3 */; };
+		6F4284CD265E5A37003BB106 /* Textures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4284CC265E5A37003BB106 /* Textures.swift */; };
+		6F4284CF265E618B003BB106 /* StartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4284CE265E618B003BB106 /* StartViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		6F421110265D12FE0027EF95 /* HomeWork_16_CubeGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HomeWork_16_CubeGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6F421110265D12FE0027EF95 /* HomeWork_16_ ForestRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HomeWork_16_ ForestRunner.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F421113265D12FE0027EF95 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6F421119265D12FE0027EF95 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		6F42111B265D12FE0027EF95 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -26,6 +28,8 @@
 		6F421122265D13080027EF95 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6F421149265D1BB50027EF95 /* hero.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = hero.atlas; sourceTree = "<group>"; };
 		6F4284CA265D71A7003BB106 /* makai-symphony-dragon-slayer.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "makai-symphony-dragon-slayer.mp3"; sourceTree = "<group>"; };
+		6F4284CC265E5A37003BB106 /* Textures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Textures.swift; sourceTree = "<group>"; };
+		6F4284CE265E618B003BB106 /* StartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -42,7 +46,7 @@
 		6F421107265D12FE0027EF95 = {
 			isa = PBXGroup;
 			children = (
-				6F421112265D12FE0027EF95 /* HomeWork_16_CubeGame */,
+				6F421112265D12FE0027EF95 /* HomeWork_16_ ForestRunner */,
 				6F421111265D12FE0027EF95 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -50,32 +54,34 @@
 		6F421111265D12FE0027EF95 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6F421110265D12FE0027EF95 /* HomeWork_16_CubeGame.app */,
+				6F421110265D12FE0027EF95 /* HomeWork_16_ ForestRunner.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6F421112265D12FE0027EF95 /* HomeWork_16_CubeGame */ = {
+		6F421112265D12FE0027EF95 /* HomeWork_16_ ForestRunner */ = {
 			isa = PBXGroup;
 			children = (
 				6F421113265D12FE0027EF95 /* AppDelegate.swift */,
 				6F421119265D12FE0027EF95 /* GameScene.swift */,
+				6F4284CC265E5A37003BB106 /* Textures.swift */,
 				6F42111B265D12FE0027EF95 /* GameViewController.swift */,
 				6F42111D265D12FE0027EF95 /* Main.storyboard */,
+				6F4284CE265E618B003BB106 /* StartViewController.swift */,
 				6F421120265D13080027EF95 /* Assets.xcassets */,
 				6F421122265D13080027EF95 /* Info.plist */,
 				6F4284CA265D71A7003BB106 /* makai-symphony-dragon-slayer.mp3 */,
 				6F421149265D1BB50027EF95 /* hero.atlas */,
 			);
-			path = HomeWork_16_CubeGame;
+			path = "HomeWork_16_ ForestRunner";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6F42110F265D12FE0027EF95 /* HomeWork_16_CubeGame */ = {
+		6F42110F265D12FE0027EF95 /* HomeWork_16_ ForestRunner */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6F421125265D13080027EF95 /* Build configuration list for PBXNativeTarget "HomeWork_16_CubeGame" */;
+			buildConfigurationList = 6F421125265D13080027EF95 /* Build configuration list for PBXNativeTarget "HomeWork_16_ ForestRunner" */;
 			buildPhases = (
 				6F42110C265D12FE0027EF95 /* Sources */,
 				6F42110D265D12FE0027EF95 /* Frameworks */,
@@ -85,9 +91,9 @@
 			);
 			dependencies = (
 			);
-			name = HomeWork_16_CubeGame;
+			name = "HomeWork_16_ ForestRunner";
 			productName = HomeWork_16_CubeGame;
-			productReference = 6F421110265D12FE0027EF95 /* HomeWork_16_CubeGame.app */;
+			productReference = 6F421110265D12FE0027EF95 /* HomeWork_16_ ForestRunner.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -104,7 +110,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6F42110B265D12FE0027EF95 /* Build configuration list for PBXProject "HomeWork_16_CubeGame" */;
+			buildConfigurationList = 6F42110B265D12FE0027EF95 /* Build configuration list for PBXProject "HomeWork_16_ ForestRunner" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -117,7 +123,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6F42110F265D12FE0027EF95 /* HomeWork_16_CubeGame */,
+				6F42110F265D12FE0027EF95 /* HomeWork_16_ ForestRunner */,
 			);
 		};
 /* End PBXProject section */
@@ -141,7 +147,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6F4284CF265E618B003BB106 /* StartViewController.swift in Sources */,
 				6F42111A265D12FE0027EF95 /* GameScene.swift in Sources */,
+				6F4284CD265E5A37003BB106 /* Textures.swift in Sources */,
 				6F42111C265D12FE0027EF95 /* GameViewController.swift in Sources */,
 				6F421114265D12FE0027EF95 /* AppDelegate.swift in Sources */,
 			);
@@ -289,7 +297,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Skillbox.HomeWork-16-CubeGame";
+				PRODUCT_BUNDLE_IDENTIFIER = "Skillbox.HomeWork-16-ForestRunner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -308,7 +316,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Skillbox.HomeWork-16-CubeGame";
+				PRODUCT_BUNDLE_IDENTIFIER = "Skillbox.HomeWork-16-ForestRunner";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -318,7 +326,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6F42110B265D12FE0027EF95 /* Build configuration list for PBXProject "HomeWork_16_CubeGame" */ = {
+		6F42110B265D12FE0027EF95 /* Build configuration list for PBXProject "HomeWork_16_ ForestRunner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6F421123265D13080027EF95 /* Debug */,
@@ -327,7 +335,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6F421125265D13080027EF95 /* Build configuration list for PBXNativeTarget "HomeWork_16_CubeGame" */ = {
+		6F421125265D13080027EF95 /* Build configuration list for PBXNativeTarget "HomeWork_16_ ForestRunner" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6F421126265D13080027EF95 /* Debug */,

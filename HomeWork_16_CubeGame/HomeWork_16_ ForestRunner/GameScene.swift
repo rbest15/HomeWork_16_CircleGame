@@ -3,82 +3,36 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    weak var gameVC : GameViewController?
+    
     var heroInAir = false
     var gameIsPaused = false {
         didSet {
-            if gameIsPaused == true {
-                children.forEach { node in
-                    node.removeAllActions()
-                    node.children.forEach { node in
-                        node.removeAllActions()
-                    }
-                }
-                enemyNodeArray.forEach { node in
-                    node.physicsBody?.affectedByGravity = false
-                }
-                musicNode.run(SKAction.stop())
-                timer.invalidate()
-            }
+            endGame()
         }
     }
     
+    var jumpCount = 0
+    
     var timer = Timer()
 
-    let heroNodeTexture = SKTexture(imageNamed: "Warrior_Run_1")
+    var heroNodeTexture = SKTexture(imageNamed: "Warrior_Run_1")
     var heroSpriteNode = SKSpriteNode()
-    let heroNode = SKNode()
+    var heroNode = SKNode()
     
     var backGroundNodeArray = [SKNode]()
     var enemyNodeArray = [SKNode]()
     
     var groundSpriteNode = SKSpriteNode()
-    let groundNode = SKNode()
+    var groundNode = SKNode()
     
     var wallSpriteNode = SKSpriteNode()
-    let wallNode = SKNode()
+    var wallNode = SKNode()
     
     var secondWallSpriteNode = SKSpriteNode()
-    let secondWallNode = SKNode()
+    var secondWallNode = SKNode()
         
-    let heroRunTextureArray : [SKTexture] = [SKTexture(imageNamed: "Warrior_Run_1"),
-                                             SKTexture(imageNamed: "Warrior_Run_2"),
-                                             SKTexture(imageNamed: "Warrior_Run_3"),
-                                             SKTexture(imageNamed: "Warrior_Run_4"),
-                                             SKTexture(imageNamed: "Warrior_Run_5"),
-                                             SKTexture(imageNamed: "Warrior_Run_6"),
-                                             SKTexture(imageNamed: "Warrior_Run_7"),
-                                             SKTexture(imageNamed: "Warrior_Run_8"),
-    ]
-    
-    let heroJumpTextureArray : [SKTexture] = [SKTexture(imageNamed: "Warrior_Jump_1"),
-                                             SKTexture(imageNamed: "Warrior_Jump_2"),
-                                             SKTexture(imageNamed: "Warrior_Jump_3"),
-                                             SKTexture(imageNamed: "Warrior_UptoFall_1"),
-                                             SKTexture(imageNamed: "Warrior_UptoFall_2"),
-                                             SKTexture(imageNamed: "Warrior_Fall_1"),
-    ]
-
-    let bgLayerTextures : [(SKTexture, CGFloat)]  = [(SKTexture(imageNamed: "Layer_0000_9"), 3),
-                                                     (SKTexture(imageNamed: "Layer_0001_8"), 3),
-                                                     (SKTexture(imageNamed: "Layer_0002_7"), 3),
-                                                     (SKTexture(imageNamed: "Layer_0003_6"), 3),
-                                                     (SKTexture(imageNamed: "Layer_0004_Lights"), 3),
-                                                     (SKTexture(imageNamed: "Layer_0005_5"), 4),
-                                                     (SKTexture(imageNamed: "Layer_0006_4"), 4),
-                                                     (SKTexture(imageNamed: "Layer_0007_Lights"), 4),
-                                                     (SKTexture(imageNamed: "Layer_0008_3"), 5),
-                                                     (SKTexture(imageNamed: "Layer_0009_2"), 5),
-                                                     (SKTexture(imageNamed: "Layer_0010_1"), 5)
-    ]
-    
-    let enenyTexture: [SKTexture] = [SKTexture(imageNamed: "fly01"),
-                                     SKTexture(imageNamed: "fly02"),
-                                     SKTexture(imageNamed: "fly03"),
-                                     SKTexture(imageNamed: "fly04"),
-                                     SKTexture(imageNamed: "fly05"),
-                                     SKTexture(imageNamed: "fly06"),
-                                     SKTexture(imageNamed: "fly07")
-    ]
+    let textures = Textures()
     
     var musicNode = SKAudioNode()
     
@@ -128,9 +82,9 @@ class GameScene: SKScene {
         addChild(node)
     }
     
-    fileprivate func addBackground() {
+    func addBackground() {
         var index = 0
-        for text in bgLayerTextures {
+        for text in textures.bgLayerTextures {
             addBackgroundLayer(texture: text.0, speed: TimeInterval(text.1), zPosOffset: CGFloat(index))
             index += 1
         }
@@ -165,7 +119,7 @@ class GameScene: SKScene {
     
     func addHero(at position: CGPoint) {
         heroSpriteNode = SKSpriteNode(texture: heroNodeTexture)
-        let heroRunAnimation = SKAction.animate(with: heroRunTextureArray, timePerFrame: 0.1)
+        let heroRunAnimation = SKAction.animate(with: textures.heroRunTextureArray, timePerFrame: 0.1)
         let heroRun = SKAction.repeatForever(heroRunAnimation)
         heroSpriteNode.run(heroRun)
         
@@ -173,7 +127,9 @@ class GameScene: SKScene {
         heroSpriteNode.zPosition = 1
         heroSpriteNode.setScale(1.5)
         
-        heroSpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: heroSpriteNode.size.width, height: heroSpriteNode.size.height))
+        
+        heroSpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: heroNodeTexture.size().width - 30, height: heroNodeTexture.size().height + 10))
+        heroSpriteNode.physicsBody?.mass = 0.3
         heroSpriteNode.physicsBody?.categoryBitMask = heroMask
         heroSpriteNode.physicsBody?.contactTestBitMask = groundMask
         heroSpriteNode.physicsBody?.collisionBitMask = groundMask
@@ -186,7 +142,7 @@ class GameScene: SKScene {
     }
     
     func createHero() {
-        addHero(at: CGPoint(x: 0 + 100, y: size.height / 2))
+        addHero(at: CGPoint(x: size.width / 2, y: size.height / 4))
     }
     
     func createAudio() {
@@ -200,21 +156,23 @@ class GameScene: SKScene {
     
     func createEnemy(height: CGFloat) {
         let enemyNode = SKNode()
-        let enemySpriteNode = SKSpriteNode(texture: enenyTexture[0])
-        let enemyAnimation = SKAction.animate(with: enenyTexture, timePerFrame: 0.1)
+        let enemySpriteNode = SKSpriteNode(texture: textures.enemyTexture[0])
+        let enemyAnimation = SKAction.animate(with: textures.enemyTexture, timePerFrame: 0.1)
         let enemyAnimationRepeat = SKAction.repeatForever(enemyAnimation)
         enemySpriteNode.run(enemyAnimationRepeat)
         
         enemySpriteNode.position = CGPoint(x: size.width, y: height)
         enemySpriteNode.zPosition = 1
+        enemySpriteNode.xScale *= -1
         
-        enemySpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: enenyTexture[0].size().width, height: enenyTexture[0].size().height))
+        enemySpriteNode.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: textures.enemyTexture[0].size().width, height: textures.enemyTexture[0].size().height))
         enemySpriteNode.physicsBody?.categoryBitMask = enemyMask
         enemySpriteNode.physicsBody?.contactTestBitMask = heroMask
         enemySpriteNode.physicsBody?.collisionBitMask = groundMask
         
         enemySpriteNode.physicsBody?.isDynamic = true
         enemySpriteNode.physicsBody?.affectedByGravity = false
+        enemySpriteNode.physicsBody?.allowsRotation = false
         
         let move = SKAction.applyImpulse(CGVector(dx: -100, dy: 0), duration: 10)
         enemySpriteNode.run(move)
@@ -224,21 +182,66 @@ class GameScene: SKScene {
         addChild(enemyNode)
     }
     
+    func heroJump(tapPos: CGPoint) {
+        heroInAir = true
+        jumpCount += 1
+        let jumpAnimation = SKAction.animate(with: textures.heroJumpTextureArray, timePerFrame: 0.1)
+        heroSpriteNode.run(jumpAnimation)
+        heroSpriteNode.physicsBody?.velocity = CGVector.zero
+        
+        let xTar = size.width / 2 < tapPos.x ? 1 : -1
+        
+        heroSpriteNode.physicsBody?.applyImpulse(CGVector(dx: 100 * xTar, dy: 120))
+    }
+
+    func heroDied() {
+        let deathAnim = SKAction.animate(with: textures.deathTextureArray, timePerFrame: 0.1)
+        heroSpriteNode.run(deathAnim)
+    }
+    
     func startSpawn() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             self.createEnemy(height: CGFloat.random(in: 0...self.size.height - 50))
         }
     }
     
+    func endGame() {
+        if gameIsPaused == true {
+            timer.invalidate()
+            children.forEach { node in
+                node.removeAllActions()
+                node.children.forEach { node in
+                    node.removeAllActions()
+                }
+            }
+            
+            musicNode.run(SKAction.stop())
+            enemyNodeArray.forEach { node in
+                node.removeFromParent()
+            }
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
+                let blurView = UIVisualEffectView(frame: self.frame)
+                blurView.alpha = 1
+                blurView.layer.zPosition = 2
+                self.gameVC?.view.addSubview(blurView)
+                UIView.animate(withDuration: 3) {
+                    blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
+                } completion: { _ in
+                    let vc = self.gameVC?.storyboard?.instantiateViewController(identifier: "startVC") as! StartViewController
+                    self.gameVC?.present(vc, animated: false, completion: nil)
+                    self.gameVC?.removeFromParent()
+                }
+            }
+        }
+    }
 }
 
 
 extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
-        print(contact.bodyA.categoryBitMask, contact.bodyB.categoryBitMask)
-        
         if contact.bodyA.categoryBitMask == 1 && contact.bodyB.categoryBitMask == 2 {
             heroInAir = false
+            jumpCount = 0
             if gameIsPaused {
                 physicsWorld.gravity = CGVector(dx: 0, dy: -10)
             }
@@ -246,6 +249,7 @@ extension GameScene: SKPhysicsContactDelegate {
         
         if contact.bodyA.categoryBitMask == 4 && contact.bodyB.categoryBitMask == 1 || contact.bodyA.categoryBitMask == 1 && contact.bodyB.categoryBitMask == 4 {
             gameIsPaused = true
+            heroDied()
             physicsWorld.gravity = CGVector(dx: 0, dy: -10)
         }
         
@@ -255,7 +259,6 @@ extension GameScene: SKPhysicsContactDelegate {
             } else {
                 contact.bodyB.node?.removeFromParent()
             }
-            
         }
     }
 }
@@ -263,19 +266,10 @@ extension GameScene: SKPhysicsContactDelegate {
 extension GameScene {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-        
-        if !heroInAir {
-            if !gameIsPaused {
-                heroJump()
+        if !gameIsPaused {
+            if jumpCount < 3 {
+                heroJump(tapPos: (touches.first!.location(in: self.view)))
             }
         }
-    }
-    
-    func heroJump() {
-        heroInAir = true
-        let jumpAnimation = SKAction.animate(with: heroJumpTextureArray, timePerFrame: 0.1)
-        heroSpriteNode.run(jumpAnimation)
-        heroSpriteNode.physicsBody?.velocity = CGVector.zero
-        heroSpriteNode.physicsBody?.applyImpulse(CGVector(dx: 95, dy: 150))
     }
 }
